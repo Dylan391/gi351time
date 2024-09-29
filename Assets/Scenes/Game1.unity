@@ -2575,7 +2575,7 @@ Tilemap:
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: -7, z: 0}
-  m_Size: {x: 74, y: 12, z: 1}
+  m_Size: {x: 74, y: 23, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -12379,6 +12379,7 @@ Tilemap:
       serializedVersion: 2
       m_TileIndex: 35
       m_TileSpriteIndex: 39
+<<<<<<< Updated upstream
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -12389,6 +12390,8 @@ Tilemap:
       serializedVersion: 2
       m_TileIndex: 44
       m_TileSpriteIndex: 38
+=======
+>>>>>>> Stashed changes
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -12563,8 +12566,13 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
+<<<<<<< Updated upstream
   - m_RefCount: 1
     m_Data: {fileID: -673311629, guid: d5000946564199345a31bff660dcbce9, type: 3}
+=======
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+>>>>>>> Stashed changes
   - m_RefCount: 1
     m_Data: {fileID: 1742736709, guid: 91a31f08d4795e046be7fd5522031c0b, type: 3}
   - m_RefCount: 1
