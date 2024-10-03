@@ -5,9 +5,29 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     public GameObject door;
+    public float doorSpeed = 2f;
     
+    private Vector3 closedPosition;
+    private Vector3 openPosition;
     private bool doorOpen = false;
 
+    private void Start()
+    {
+        closedPosition = door.transform.position;
+        openPosition = closedPosition + new Vector3(0, 6f, 0);
+    }
+
+    private void Update()
+    {
+        if (doorOpen)
+        {
+            door.transform.position = Vector3.MoveTowards(door.transform.position, openPosition, doorSpeed * Time.deltaTime);
+        }
+        else
+        {
+            door.transform.position = Vector3.MoveTowards(door.transform.position, closedPosition, doorSpeed * Time.deltaTime);
+        }
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Pushable"))
@@ -29,7 +49,6 @@ public class Door : MonoBehaviour
         if (!doorOpen)
         {
             doorOpen = true;
-            door.gameObject.SetActive(false);
         }
     }
 
@@ -38,7 +57,6 @@ public class Door : MonoBehaviour
         if (doorOpen)
         {
             doorOpen = false;
-            door.gameObject.SetActive(true);
         }
     }
 }
