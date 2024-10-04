@@ -11,4 +11,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Prototype2.unity
     guid: d94a7522c3e4c3f4e9393ccba637960f
+  - enabled: 1
+    path: Assets/Menu.unity
+    guid: 1e7b1678a4db7ca4db711088e35bc2e7
+  - enabled: 1
+    path: Assets/Lose.unity
+    guid: 897f5a489147b804fab7c377ab47502b
+  - enabled: 1
+    path: Assets/Win.unity
+    guid: 27f5935a8ec3eba489155572eca389d7
   m_configObjects: {}
