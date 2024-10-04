@@ -176,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.CompareTag("Ground"))
         {
-            if (playerCollider != null)
+            if (playerCollider != null && playerCollider.enabled == false)
             {
                 playerCollider.enabled = true;
             }
