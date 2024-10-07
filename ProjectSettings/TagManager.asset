@@ -9,6 +9,9 @@ TagManager:
   - SavePoint
   - Climbable
   - Pushable
+  - Ball
+  - itemOfTime
+  - ACTWO
   layers:
   - Default
   - TransparentFX

@@ -35,12 +35,28 @@ public class DoorTwo : MonoBehaviour
             CloseDoor();
         }
     }
+    
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            OpenDoor();
+        }
+    }
 
     private void CloseDoor()
     {
         if (doorOpen)
         {
             doorOpen = false;
+        }
+    }
+    
+    private void OpenDoor()
+    {
+        if (!doorOpen)
+        {
+            doorOpen = true;
         }
     }
 }

@@ -35,9 +35,8 @@ public class EnemyDDO : MonoBehaviour
     {
         string currentScene = SceneManager.GetActiveScene().name;
 
-        if (currentScene == "Game 1")
+        if (currentScene == "Game1")
         {
-            // เปิด Enemy ทั้งหมด
             foreach (GameObject enemy in enemiesG1)
             {
                 enemy.SetActive(true);
@@ -48,7 +47,7 @@ public class EnemyDDO : MonoBehaviour
             }
             //Debug.Log("Enemies are activated in Game 1");
         }
-        else if (currentScene == "Game 2")
+        else if (currentScene == "Game2")
         {
             // ปิด Enemy ทั้งหมด
             foreach (GameObject enemy in enemiesG1)
