@@ -17,6 +17,24 @@ public class TakeDamage : MonoBehaviour
             yield return new WaitForSeconds(3f);
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            hitPlayer = true;
+            StartCoroutine(AttackPlayer());
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            hitPlayer = false;
+            StopCoroutine(AttackPlayer());
+        }
+    }
     
     private void OnCollisionEnter2D(Collision2D collision)
     {

@@ -10,12 +10,17 @@ public class PlayerManager : MonoBehaviour
     public int lives = 3;
     public Slider healthSlider;
     public Text livesText;
+    public GameObject respawnUI;
+    public GameObject UIAC1;
+    public GameObject UIAC2;
     
     private static PlayerManager instance;
     private string currentScene;
     private bool isLoading = false;
     private int currentHealth;
     private Vector3 savePoint;
+    private bool powerOfTime = false;
+    private bool acOne = false;
 
     void Awake()
     {
@@ -37,6 +42,9 @@ public class PlayerManager : MonoBehaviour
         healthSlider.maxValue = maxHealth;
         savePoint = transform.position;
         UpdateUI();
+        respawnUI.SetActive(false);
+        UIAC1.SetActive(false);
+        UIAC2.SetActive(false);
     }
     
     void Update()
@@ -47,6 +55,17 @@ public class PlayerManager : MonoBehaviour
         {
             TakeDamage(1);
         }
+
+        if (powerOfTime && !acOne)
+        {
+            if (Input.GetKey(KeyCode.G))
+            {
+                acOne = true;
+                Time.timeScale = 1;
+                UIAC1.SetActive(false);
+                UIAC2.SetActive(false);
+            }
+        }
     }
 
     private void CheckCurrentScene()
@@ -56,30 +75,33 @@ public class PlayerManager : MonoBehaviour
 
     public bool IsInGame1()
     {
-        return currentScene == "Game 1"; // เช็คว่าอยู่ใน "Game 1"
+        return currentScene == "Game1"; // เช็คว่าอยู่ใน "Game 1"
     }
 
     public bool IsInGame2()
     {
-        return currentScene == "Game 2"; // เช็คว่าอยู่ใน "Game 2"
+        return currentScene == "Game2"; // เช็คว่าอยู่ใน "Game 2"
     }
     
     void SomeFunction()
     {
         PlayerManager playerManager = FindObjectOfType<PlayerManager>();
-    
-        if (playerManager.IsInGame1() && !isLoading)
+
+        if (powerOfTime)
         {
-            if (Input.GetKey(KeyCode.G))
+            if (playerManager.IsInGame1() && !isLoading)
             {
-                StartCoroutine(LoadSceneWithDelay(1, 1f)); // หน่วงเวลา 1 วินาที
+                if (Input.GetKey(KeyCode.G))
+                {
+                    StartCoroutine(LoadSceneWithDelay(1, 1f)); // หน่วงเวลา 1 วินาที
+                }
             }
-        }
-        else if (playerManager.IsInGame2())
-        {
-            if (Input.GetKey(KeyCode.G) && !isLoading)
+            else if (playerManager.IsInGame2())
             {
-                StartCoroutine(LoadSceneWithDelay(0, 1f)); // หน่วงเวลา 1 วินาที
+                if (Input.GetKey(KeyCode.G) && !isLoading)
+                {
+                    StartCoroutine(LoadSceneWithDelay(0, 1f)); // หน่วงเวลา 1 วินาที
+                }
             }
         }
     }
@@ -107,20 +129,34 @@ public class PlayerManager : MonoBehaviour
         lives--;
         if (lives > 0)
         {
-            Respawn();
+            ShowRespawnUI();
         }
         else
         {
+            ShowRespawnUI();
             Debug.Log("Game Over");
         }
         UpdateUI();
     }
+    
+    void ShowRespawnUI()
+    {
+        respawnUI.SetActive(true); // แสดง UI
+        Time.timeScale = 0; // หยุดเวลาเกม
+    }
 
-    void Respawn()
+    public void Respawn()
     {
         transform.position = savePoint;
         currentHealth = maxHealth;
         UpdateUI();
+        HideRespawnUI();
+    }
+    
+    public void HideRespawnUI()
+    {
+        respawnUI.SetActive(false); // ซ่อน UI
+        Time.timeScale = 1; // เริ่มเวลาเกมอีกครั้ง
     }
 
     void UpdateUI()
@@ -133,5 +169,32 @@ public class PlayerManager : MonoBehaviour
     {
         savePoint = position;
         Debug.Log("Save point set at: " + savePoint);
+    }
+    
+    public void OnRespawnButton()
+    {
+        Respawn();
+    }
+    
+    public void OnMenuButton()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("itemOfTime"))
+        {
+            UIAC1.SetActive(true);
+            Time.timeScale = 0;
+            powerOfTime = true;
+        }
+
+        if (other.CompareTag("ACTWO"))
+        {
+            UIAC2.SetActive(true);
+            Time.timeScale = 0;
+            acOne = false;
+        }
     }
 }
