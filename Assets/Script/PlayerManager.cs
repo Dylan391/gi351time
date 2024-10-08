@@ -13,6 +13,7 @@ public class PlayerManager : MonoBehaviour
     public GameObject respawnUI;
     public GameObject UIAC1;
     public GameObject UIAC2;
+    public AudioClip playerDeathSound;
     
     private static PlayerManager instance;
     private string currentScene;
@@ -21,6 +22,7 @@ public class PlayerManager : MonoBehaviour
     private Vector3 savePoint;
     private bool powerOfTime = false;
     private bool acOne = false;
+    private AudioSource audioSource;
 
     void Awake()
     {
@@ -45,6 +47,7 @@ public class PlayerManager : MonoBehaviour
         respawnUI.SetActive(false);
         UIAC1.SetActive(false);
         UIAC2.SetActive(false);
+        audioSource = GetComponent<AudioSource>();
     }
     
     void Update()
@@ -120,6 +123,7 @@ public class PlayerManager : MonoBehaviour
         if (currentHealth <= 0)
         {
             LoseLife();
+            audioSource.PlayOneShot(playerDeathSound);
         }
         UpdateUI();
     }

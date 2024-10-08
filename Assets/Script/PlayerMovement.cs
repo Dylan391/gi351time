@@ -18,6 +18,9 @@ public class PlayerMovement : MonoBehaviour
     public float currentEnergy; // พลังงานปัจจุบัน
     public float energyConsumptionRate = 1f; // อัตราการลดพลังงานต่อวินาที
     public float energyRecoveryRate = 5f; // อัตราการเพิ่มพลังงานต่อวินาที
+    public Animator animator;
+    public AudioClip jumpSound;
+    public AudioClip runSound;
     
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -29,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     private GameObject currentBox;
     private Collider2D currentWall;
     private BoxCollider2D playerCollider;
+    private AudioSource audioSource;
 
     void Start()
     {
@@ -36,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
         energyBar.value = maxEnergy;
         currentEnergy = maxEnergy;
         playerCollider = GetComponent<BoxCollider2D>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -61,6 +66,57 @@ public class PlayerMovement : MonoBehaviour
             energyBar.value = currentEnergy / maxEnergy;
         }
         
+        if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.LeftShift))
+        {
+            animator.SetBool("isWalk", true);
+            animator.SetBool("isIdle", false);
+        }
+        
+        else if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
+        {
+            animator.SetBool("isWalk", false);
+            animator.SetBool("isRun", false);
+            animator.SetBool("isIdle", true);
+        }
+        
+        else if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.LeftShift))
+        {
+            animator.SetBool("isRun", true);
+            animator.SetBool("isIdle", false);
+        }
+
+        else if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.LeftShift))
+        {
+            animator.SetBool("isRun", true);
+            animator.SetBool("isIdle", false);
+        }
+        
+        else if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
+        {
+            animator.SetBool("isRun", false);
+            animator.SetBool("isIdle", true);
+        }
+        else if (Input.GetKey(KeyCode.Space))
+        {
+            animator.SetBool("isJump", true);
+        }
+        else if (Input.GetKeyUp(KeyCode.Space))
+        {
+            animator.SetBool("isJump", false);
+        }
+        
+        else if (isClimbing)
+        {
+            animator.SetBool("isClimb", true);
+            animator.SetBool("isIdle", false);
+        }
+        else if (!isClimbing)
+        {
+            animator.SetBool("isClimb", false);
+            animator.SetBool("isIdle", true);
+        }
+        
+        
 
         // ซ่อน EnergyBar เมื่อไม่วิ่ง
         energyBar.gameObject.SetActive(currentEnergy < maxEnergy || Input.GetKey(KeyCode.LeftShift));
@@ -68,35 +124,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        /*float moveInput = Input.GetAxis("Horizontal"); // รับค่าจากปุ่มลูกศรหรือ A/D
-        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y); // เคลื่อนที่
-        
-        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : moveSpeed;
-        rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y);
-        */
-        
-        float moveInput = Input.GetAxis("Horizontal"); // รับค่าจากปุ่มลูกศรหรือ A/D
+        float moveInput = Input.GetAxis("Horizontal");
         float currentSpeed = Input.GetKey(KeyCode.LeftShift) && currentEnergy > 0 ? runSpeed : moveSpeed;
 
         rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y); // เคลื่อนที่
 
         // ลดพลังงานเมื่อวิ่ง
-        if (Input.GetKey(KeyCode.LeftShift) && currentEnergy > 0)
+        if (Input.GetKey(KeyCode.LeftShift) && currentEnergy > 0 && !isClimbing)
         {
             currentEnergy -= energyConsumptionRate * Time.deltaTime;
             currentEnergy = Mathf.Max(currentEnergy, 0); // ไม่ให้ต่ำกว่า 0
+        }
+        
+        if (moveInput != 0)
+        {
+            transform.localScale = new Vector3(Mathf.Sign(moveInput), 1, 1);
         }
     }
 
     private void Jump()
     {
-        if (Input.GetKey(KeyCode.Space) && isGrounded && !isPushOrPull || Input.GetKey(KeyCode.Space) && isBox && !isPushOrPull) // ตรวจสอบว่ากดปุ่ม Jump
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            //rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); // กระโดด
-        }
+        bool jumpCondition = Input.GetKey(KeyCode.Space) && !isPushOrPull;
 
-        if (Input.GetKey(KeyCode.Space) && isClimb && !isPushOrPull || Input.GetKey(KeyCode.Space) && isPlatform && !isPushOrPull)
+        if (jumpCondition && (isGrounded || isBox || isClimb || isPlatform))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
@@ -112,6 +162,7 @@ public class PlayerMovement : MonoBehaviour
         if (isClimbing)
         {
             float vericalInput = Input.GetAxis("Vertical");
+            
             rb.velocity = new Vector2(0, vericalInput * climbSpeed);
 
             if (Input.GetButtonUp("Vertical") || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
@@ -136,11 +187,19 @@ public class PlayerMovement : MonoBehaviour
                     {
                         currentBox.transform.position = transform.position + Vector3.right * 1f;
                         isPushOrPull = true;
+                        animator.SetBool("isIdle", true);
+                        animator.SetBool("isJump", false);
+                        animator.SetBool("isRun", false);
+                        animator.SetBool("isWalk", false);
                     }
                     else if (Input.GetKey(KeyCode.D))
                     {
                         currentBox.transform.position = transform.position + Vector3.left * 1f;
                         isPushOrPull = true;
+                        animator.SetBool("isIdle", true);
+                        animator.SetBool("isJump", false);
+                        animator.SetBool("isRun", false);
+                        animator.SetBool("isWalk", false);
                     }
                 }
             }
