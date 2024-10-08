@@ -14,14 +14,17 @@ public class PlayerManager : MonoBehaviour
     public GameObject UIAC1;
     public GameObject UIAC2;
     public AudioClip playerDeathSound;
+    public AudioClip playerHitSound;
+    public AudioClip playerWarpSound;
+    public int currentHealth;
     
     private static PlayerManager instance;
     private string currentScene;
     private bool isLoading = false;
-    private int currentHealth;
     private Vector3 savePoint;
     private bool powerOfTime = false;
     private bool acOne = false;
+    private bool stopLoading = false;
     private AudioSource audioSource;
 
     void Awake()
@@ -65,8 +68,6 @@ public class PlayerManager : MonoBehaviour
             {
                 acOne = true;
                 Time.timeScale = 1;
-                UIAC1.SetActive(false);
-                UIAC2.SetActive(false);
             }
         }
     }
@@ -96,14 +97,14 @@ public class PlayerManager : MonoBehaviour
             {
                 if (Input.GetKey(KeyCode.G))
                 {
-                    StartCoroutine(LoadSceneWithDelay(1, 1f)); // หน่วงเวลา 1 วินาที
+                    StartCoroutine(LoadSceneWithDelay(1, 3f)); // หน่วงเวลา 1 วินาที
                 }
             }
             else if (playerManager.IsInGame2())
             {
                 if (Input.GetKey(KeyCode.G) && !isLoading)
                 {
-                    StartCoroutine(LoadSceneWithDelay(0, 1f)); // หน่วงเวลา 1 วินาที
+                    StartCoroutine(LoadSceneWithDelay(0, 3f)); // หน่วงเวลา 1 วินาที
                 }
             }
         }
@@ -112,8 +113,16 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator LoadSceneWithDelay(int sceneIndex, float delay)
     {
         isLoading = true;
+        audioSource.PlayOneShot(playerWarpSound);
+        if (stopLoading)
+        {
+            isLoading = false;
+            yield break;
+        }
         yield return new WaitForSeconds(delay); // หน่วงเวลาตามที่กำหนด
         SceneManager.LoadSceneAsync(sceneIndex); // เปลี่ยน scene
+        UIAC1.SetActive(false);
+        UIAC2.SetActive(false);
         isLoading = false;
     }
     
@@ -123,8 +132,10 @@ public class PlayerManager : MonoBehaviour
         if (currentHealth <= 0)
         {
             LoseLife();
+            stopLoading = true;
             audioSource.PlayOneShot(playerDeathSound);
         }
+        audioSource.PlayOneShot(playerHitSound);
         UpdateUI();
     }
 
@@ -155,6 +166,7 @@ public class PlayerManager : MonoBehaviour
         currentHealth = maxHealth;
         UpdateUI();
         HideRespawnUI();
+        stopLoading = false;
     }
     
     public void HideRespawnUI()

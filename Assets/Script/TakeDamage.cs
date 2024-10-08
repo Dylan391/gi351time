@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,21 @@ public class TakeDamage : MonoBehaviour
     public int damage = 15;
     
     private bool hitPlayer = false;
-    
+    private Vector3 startPosition;
+
+    private void Awake()
+    {
+        startPosition = transform.position;
+    }
+
+    private void Update()
+    {
+        if (playerManager.currentHealth <= 0)
+        {
+            ReturnToStart();
+        }
+    }
+
     private IEnumerator AttackPlayer()
     {
         while (hitPlayer)
@@ -52,5 +67,10 @@ public class TakeDamage : MonoBehaviour
             hitPlayer = false;
             StopCoroutine(AttackPlayer());
         }
+    }
+
+    private void ReturnToStart()
+    {
+        transform.position = startPosition;
     }
 }
