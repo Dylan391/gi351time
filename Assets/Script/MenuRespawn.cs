@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class MenuRespawn : MonoBehaviour
 {
     public PlayerManager manager;
+    public GameObject respawnMenu;
     
     public void OnRespawnButton()
     {
@@ -17,6 +18,7 @@ public class MenuRespawn : MonoBehaviour
     
     public void OnMenuButton()
     {
+        respawnMenu.SetActive(false);
         SceneManager.LoadSceneAsync(2);
     }
 }

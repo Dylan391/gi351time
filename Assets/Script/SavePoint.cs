@@ -4,20 +4,12 @@ using UnityEngine;
 
 public class SavePoint : MonoBehaviour
 {
-    public Vector3 savePosition;
+    private Vector3 savePosition;
 
-    /*private void OnTriggerEnter(Collider other)
+    void Awake()
     {
-        if (other.CompareTag("Player"))
-        {
-            PlayerManager playerHealth = other.GetComponent<PlayerManager>();
-            if (playerHealth != null)
-            {
-                playerHealth.SetSavePoint(savePosition);
-            }
-            Debug.Log(savePosition);
-        }
-    }*/
+        savePosition = transform.position;
+    }
     
     private void OnTriggerEnter2D(Collider2D collision)
     {

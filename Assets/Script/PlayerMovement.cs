@@ -140,6 +140,11 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(Mathf.Sign(moveInput), 1, 1);
         }
+        
+        if (moveInput != 0 && !audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(runSound);
+        }
     }
 
     private void Jump()
@@ -149,6 +154,7 @@ public class PlayerMovement : MonoBehaviour
         if (jumpCondition && (isGrounded || isBox || isClimb || isPlatform))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            audioSource.PlayOneShot(jumpSound);
         }
     }
     
